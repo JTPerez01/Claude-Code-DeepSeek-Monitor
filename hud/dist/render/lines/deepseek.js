@@ -7,7 +7,7 @@ import { t } from '../../i18n/index.js';
 const DS_INPUT_PRICE = 3;
 const DS_CACHE_PRICE = 0.025;
 const DS_OUTPUT_PRICE = 6;
-const REFRESH_SEC = 30; // 缓存过期时间
+const REFRESH_SEC = 5; // 5 秒刷新
 const ALERT_DEFAULT = 0.5;
 const CACHE_DIR = path.join(os.homedir(), '.claude', 'deepseek-cache');
 try {
@@ -27,8 +27,13 @@ function getBalance() {
         cached = fs.readFileSync(BALANCE_CACHE, 'utf-8').trim();
     }
     catch { }
-    // 缓存过期 → 同步拉取（execSync 最多等 3 秒）
+    // 缓存过期 → 同步拉取（防止并发：用 mtime 做简单锁）
     if (age > REFRESH_SEC) {
+        // touch 文件防止并发请求
+        try {
+            fs.utimesSync(BALANCE_CACHE, new Date(), new Date());
+        }
+        catch { }
         try {
             let apiKey = '';
             try {
@@ -141,7 +146,14 @@ export function renderDeepSeekLine(ctx) {
     if (bal) {
         const color = rainbow(bal.value);
         const warn = bal.fresh ? '' : ` ${red('⚠')}`;
-        parts.push(`${label(t('label.balance'))} ${color}¥${bal.str}${RESET}${warn}`);
+        // 显示缓存年龄
+        let age = '';
+        try {
+            const s = fs.statSync(BALANCE_CACHE);
+            age = ` ${dim(Math.round((Date.now() - s.mtimeMs) / 1000) + 's')}`;
+        }
+        catch { }
+        parts.push(`${label(t('label.balance'))} ${color}¥${bal.str}${RESET}${warn}${age}`);
     }
     if (parts.length === 0)
         return null;
