@@ -4,7 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const CACHE = path.join(os.tmpdir(), 'deepseek-balance-cache.txt');
+const CACHE_DIR = path.join(os.homedir(), '.claude', 'deepseek-cache');
+try { fs.mkdirSync(CACHE_DIR, { recursive: true }); } catch {}
+const CACHE = path.join(CACHE_DIR, 'balance.txt');
 const SETTINGS = path.join(os.homedir(), '.claude', 'settings.json');
 
 function getApiKey() {

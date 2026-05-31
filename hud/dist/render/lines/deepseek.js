@@ -8,9 +8,14 @@ const DS_CACHE_PRICE = 0.025;
 const DS_OUTPUT_PRICE = 6;
 const OFFLINE_SEC = 90; // 超过 90s 没更新 = 离线
 const ALERT_DEFAULT = 0.5; // 单轮超 ¥0.5 提醒
-const TMP = os.tmpdir();
-const BALANCE_CACHE = path.join(TMP, 'deepseek-balance-cache.txt');
-const COST_CACHE = path.join(TMP, 'deepseek-last-cost.txt');
+const CACHE_DIR = path.join(os.homedir(), '.claude', 'deepseek-cache');
+// ensure dir exists
+try {
+    fs.mkdirSync(CACHE_DIR, { recursive: true });
+}
+catch { }
+const BALANCE_CACHE = path.join(CACHE_DIR, 'balance.txt');
+const COST_CACHE = path.join(CACHE_DIR, 'last-cost.txt');
 function readBalance() {
     try {
         const stat = fs.statSync(BALANCE_CACHE);

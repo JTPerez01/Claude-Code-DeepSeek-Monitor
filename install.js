@@ -5,7 +5,7 @@ const path = require('path');
 const os = require('os');
 
 const HOME = os.homedir();
-const TMP = os.tmpdir();
+const CACHE_DIR = path.join(HOME, '.claude', 'deepseek-cache'); fs.mkdirSync(CACHE_DIR, { recursive: true });
 const CLAUDE_DIR = path.join(HOME, '.claude');
 const PLUGIN_DIR = path.join(CLAUDE_DIR, 'plugins', 'claude-hud');
 const SKILLS_DIR = path.join(CLAUDE_DIR, 'skills', 'usage');
@@ -24,7 +24,7 @@ console.log(`╚═════════════════════�
 try {
   const hudDest = path.join(CLAUDE_DIR, 'plugins', 'cache', 'deepseek-monitor', '1.0.0');
   const scriptDir = path.join(CLAUDE_DIR, 'plugins', 'custom', 'deepseek-monitor', 'scripts');
-  const balanceCache = path.join(TMP, 'deepseek-balance-cache.txt');
+  const balanceCache = path.join(CACHE_DIR, 'balance.txt');
 
   log('📦', 'install HUD...');
   fs.mkdirSync(hudDest, { recursive: true });
