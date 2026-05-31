@@ -1,0 +1,38 @@
+{
+  "name": "claude-code-deepseek-monitor",
+  "version": "1.0.8",
+  "description": "DeepSeek 用量实时监控插件 — Claude Code 底部状态栏显示 token、费用、余额",
+  "keywords": [
+    "claude-code",
+    "deepseek",
+    "monitor",
+    "hud",
+    "statusline",
+    "token",
+    "cost",
+    "balance"
+  ],
+  "license": "MIT",
+  "author": "seven",
+  "repository": "https://github.com/love72-seven/Claude-Code-DeepSeek-Monitor",
+  "homepage": "https://github.com/love72-seven/Claude-Code-DeepSeek-Monitor#readme",
+  "bin": {
+    "deepseek-monitor": "./scripts/monitor.js"
+  },
+  "files": [
+    "hud/",
+    "scripts/",
+    "skills/",
+    "install.js",
+    "uninstall.js",
+    "README.md"
+  ],
+  "scripts": {
+    "postinstall": "node install.js",
+    "preuninstall": "node uninstall.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}
