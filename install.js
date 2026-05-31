@@ -99,13 +99,21 @@ try {
 
   log('🔄', 'starting daemon...');
   try {
+    // 杀掉旧 daemon
+    try { execSync(`pkill -f balance-daemon.js 2>/dev/null || true`, { stdio: 'ignore' }); } catch {}
+    try {
+      const oldPid = fs.readFileSync(path.join(CACHE_DIR, 'daemon.pid'), 'utf-8').trim();
+      try { process.kill(parseInt(oldPid)); } catch {}
+    } catch {}
+    fs.rmSync(path.join(CACHE_DIR, 'daemon.log'), { force: true });
+
     const daemonPath = path.join(scriptDir, 'balance-daemon.js');
     const subprocess = require('child_process').spawn(NODE, [daemonPath], {
       detached: true, stdio: 'ignore',
       windowsHide: true,
     });
     subprocess.unref();
-    ok('daemon started (background)');
+    ok('daemon started');
   } catch { ok('daemon start skipped'); }
 
   console.log(`\n${C.b}${C.g}  ✨ Done! Restart Claude Code.${C.r}\n`);
