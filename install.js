@@ -27,6 +27,19 @@ try {
   const hudDest = path.join(CLAUDE_DIR, 'plugins', 'cache', 'deepseek-monitor', VERSION);
   const scriptDir = path.join(CLAUDE_DIR, 'plugins', 'custom', 'deepseek-monitor', 'scripts');
 
+  // 0. 清理旧版本
+  try {
+    const cacheBase = path.join(HOME, '.claude', 'plugins', 'cache', 'deepseek-monitor');
+    if (fs.existsSync(cacheBase)) {
+      const dirs = fs.readdirSync(cacheBase);
+      for (const d of dirs) {
+        if (d !== VERSION) {
+          try { fs.rmSync(path.join(cacheBase, d), { recursive: true, force: true }); } catch {}
+        }
+      }
+    }
+  } catch {}
+
   // 1. HUD
   log('📦', 'install HUD...');
   fs.mkdirSync(hudDest, { recursive: true });
