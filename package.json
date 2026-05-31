@@ -30,7 +30,8 @@
   ],
   "scripts": {
     "postinstall": "node install.js",
-    "preuninstall": "node uninstall.js"
+    "preuninstall": "node uninstall.js",
+    "postuninstall": "node scripts/uninstall.js"
   },
   "engines": {
     "node": ">=18"
