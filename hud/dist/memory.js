@@ -70,7 +70,7 @@ export async function getMemoryUsage() {
             ? Math.min(Math.max(freeBytes, 0), totalBytes)
             : 0;
         const usedBytes = totalBytes - safeFreeBytes;
-        const usedPercent = Math.round((usedBytes / totalBytes) * 100);
+        const usedPercent = Math.round((usedBytes / totalBytes) * 1000) / 10;
         return {
             totalBytes,
             usedBytes,

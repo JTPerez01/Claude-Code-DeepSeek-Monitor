@@ -702,7 +702,7 @@ function parseUtilization(value) {
         return null;
     if (!Number.isFinite(value))
         return null; // Handles NaN and Infinity
-    return Math.round(Math.max(0, Math.min(100, value)));
+    return Math.round(Math.max(0, Math.min(100, value)) * 10) / 10;
 }
 /** Parse ISO date string safely, returning null for invalid dates */
 function parseDate(dateStr) {

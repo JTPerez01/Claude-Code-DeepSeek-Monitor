@@ -25,7 +25,7 @@ const C = {
 const fmt = {
   num: (n) => Number(n).toLocaleString('en'),
   money: (n) => `¥${Number(n).toFixed(4)}`,
-  pct: (n) => `${Math.round(n)}%`,
+  pct: (n) => `${n.toFixed(1)}%`,
 };
 
 // ── 参数 ──
@@ -167,7 +167,7 @@ const totalAll = stats.totalTok || 1;
 const inPct = stats.totalIn / totalAll * 100;
 const outPct = stats.totalOut / totalAll * 100;
 const remain = balData.total - stats.totalCost;
-const remainPct = balData.total > 0 ? Math.round(remain / balData.total * 100) : 100;
+const remainPct = balData.total > 0 ? Number(((remain / balData.total) * 100).toFixed(1)) : 100;
 const inCostUncached = stats.uncached / 1e6 * INPUT_PRICE;
 const inCostCached = stats.maxCache / 1e6 * CACHE_PRICE;
 const cacheColor = cachePct < 20 ? C.red : cachePct < 50 ? C.yellow : C.green;

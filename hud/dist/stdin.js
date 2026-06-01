@@ -118,7 +118,7 @@ export function getTotalTokens(stdin) {
 function getNativePercent(stdin) {
     const nativePercent = stdin.context_window?.used_percentage;
     if (typeof nativePercent === 'number' && !Number.isNaN(nativePercent) && nativePercent > 0) {
-        return Math.min(100, Math.max(0, Math.round(nativePercent)));
+        return Math.min(100, Math.max(0, Math.round(nativePercent * 10) / 10));
     }
     return null;
 }
@@ -134,7 +134,7 @@ export function getContextPercent(stdin) {
         return 0;
     }
     const totalTokens = getTotalTokens(stdin);
-    return Math.min(100, Math.round((totalTokens / size) * 100));
+    return Math.min(100, Math.round((totalTokens / size) * 1000) / 10);
 }
 export function getBufferedPercent(stdin) {
     // Prefer native percentage (v2.1.6+) so the HUD matches Claude Code's
@@ -156,7 +156,7 @@ export function getBufferedPercent(stdin) {
     const HIGH = 0.50;
     const scale = Math.min(1, Math.max(0, (rawRatio - LOW) / (HIGH - LOW)));
     const buffer = size * AUTOCOMPACT_BUFFER_PERCENT * scale;
-    return Math.min(100, Math.round(((totalTokens + buffer) / size) * 100));
+    return Math.min(100, Math.round(((totalTokens + buffer) / size) * 1000) / 10);
 }
 // Enterprise plan alias → human-readable display name
 const ENTERPRISE_ALIAS_LABELS = {
@@ -221,7 +221,7 @@ function parseRateLimitPercent(value) {
     if (typeof value !== 'number' || !Number.isFinite(value)) {
         return null;
     }
-    return Math.round(Math.min(100, Math.max(0, value)));
+    return Math.round(Math.min(100, Math.max(0, value)) * 10) / 10;
 }
 function parseRateLimitResetAt(value) {
     if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {

@@ -236,7 +236,7 @@ export function applyContextWindowFallback(stdin, overrides = {}, sessionName, c
             const postTokens = compactHint?.lastCompactPostTokens;
             const size = contextWindow.context_window_size ?? 0;
             if (typeof postTokens === "number" && postTokens > 0 && size > 0) {
-                const pct = Math.min(100, Math.max(0, Math.round((postTokens / size) * 100)));
+                const pct = Math.min(100, Math.max(0, Math.round((postTokens / size) * 1000) / 10));
                 contextWindow.used_percentage = pct;
                 contextWindow.remaining_percentage = 100 - pct;
             }

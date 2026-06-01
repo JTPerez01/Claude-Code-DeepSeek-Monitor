@@ -326,14 +326,14 @@ function formatContextValue(ctx, percent, mode) {
     }
     if (mode === 'both') {
         if (size > 0) {
-            return `${percent}% (${formatTokens(totalTokens)}/${formatTokens(size)})`;
+            return `${percent.toFixed(1)}% (${formatTokens(totalTokens)}/${formatTokens(size)})`;
         }
-        return `${percent}%`;
+        return `${percent.toFixed(1)}%`;
     }
     if (mode === 'remaining') {
-        return `${Math.max(0, 100 - percent)}%`;
+        return `${Math.max(0, 100 - percent).toFixed(1)}%`;
     }
-    return `${percent}%`;
+    return `${percent.toFixed(1)}%`;
 }
 function formatCompactWindowPart(windowLabel, percent, resetAt, timeFormat, colors, usageValueMode = 'percent') {
     const usageDisplay = formatUsagePercent(percent, colors, usageValueMode);
@@ -349,7 +349,7 @@ function formatUsagePercent(percent, colors, mode = 'percent') {
     }
     const color = getQuotaColor(percent, colors);
     const displayPercent = mode === 'remaining' ? Math.max(0, 100 - percent) : percent;
-    return `${color}${displayPercent}%${RESET}`;
+    return `${color}${displayPercent.toFixed(1)}%${RESET}`;
 }
 function formatUsageWindowPart({ label: windowLabel, percent, resetAt, colors, usageBarEnabled, barWidth, timeFormat = 'relative', showResetLabel, forceLabel = false, usageValueMode = 'percent', }) {
     const usageDisplay = formatUsagePercent(percent, colors, usageValueMode);

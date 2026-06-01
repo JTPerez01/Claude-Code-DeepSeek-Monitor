@@ -55,13 +55,13 @@ function formatContextValue(ctx, percent, mode) {
     }
     if (mode === "both") {
         if (size > 0) {
-            return `${percent}% (${formatTokens(totalTokens)}/${formatTokens(size)})`;
+            return `${percent.toFixed(1)}% (${formatTokens(totalTokens)}/${formatTokens(size)})`;
         }
-        return `${percent}%`;
+        return `${percent.toFixed(1)}%`;
     }
     if (mode === "remaining") {
-        return `${Math.max(0, 100 - percent)}%`;
+        return `${Math.max(0, 100 - percent).toFixed(1)}%`;
     }
-    return `${percent}%`;
+    return `${percent.toFixed(1)}%`;
 }
 //# sourceMappingURL=identity.js.map

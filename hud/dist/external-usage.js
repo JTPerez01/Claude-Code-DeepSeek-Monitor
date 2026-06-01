@@ -15,7 +15,7 @@ function parseUsagePercent(value) {
     if (typeof value !== 'number' || !Number.isFinite(value)) {
         return null;
     }
-    return Math.round(Math.min(100, Math.max(0, value)));
+    return Math.round(Math.min(100, Math.max(0, value)) * 10) / 10;
 }
 function sanitizeBalanceLabel(value) {
     if (typeof value !== 'string') {
