@@ -2,14 +2,15 @@
   "language": "en",
   "lineLayout": "compact",
   "elementOrder": [
+    "context",
     "deepseek"
   ],
   "display": {
-    "showModel": false,
-    "showProject": false,
-    "showContextBar": false,
+    "showModel": true,
+    "showProject": true,
+    "showContextBar": true,
     "showDeepSeek": true,
-    "showCost": true,
+    "showCost": false,
     "showUsage": false,
     "showTools": false,
     "showAgents": false,

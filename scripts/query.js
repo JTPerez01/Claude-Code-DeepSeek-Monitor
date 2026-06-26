@@ -10,7 +10,7 @@ const BALANCE_CACHE = path.join(TMP, 'deepseek-balance-cache.txt');
 const CLAUDE_DIR = path.join(os.homedir(), '.claude');
 const SETTINGS = path.join(CLAUDE_DIR, 'settings.json');
 
-// ── Pricing (USD per 1M tokens — override via env vars) ──
+// ── 定价 (USD per 1M tokens — override via env vars for other currencies) ──
 const INPUT_PRICE = +process.env.DEEPSEEK_INPUT_PRICE || 0.435;
 const OUTPUT_PRICE = +process.env.DEEPSEEK_OUTPUT_PRICE || 0.87;
 const CACHE_PRICE = +process.env.DEEPSEEK_CACHE_HIT_PRICE || 0.003625;
@@ -22,7 +22,6 @@ const C = {
   blue: '\x1b[34m', magenta: '\x1b[35m', cyan: '\x1b[36m',
   bblack: '\x1b[90m', byellow: '\x1b[93m', bcyan: '\x1b[96m',
 };
-let currencySymbol = '$'; // detected from balance API
 const fmt = {
   num: (n) => Number(n).toLocaleString('en'),
   money: (n) => `${currencySymbol}${Number(n).toFixed(4)}`,
@@ -35,13 +34,14 @@ const mode = args.includes('--short') || args.includes('-s') ? 'short' : 'full';
 const refresh = args.includes('--refresh') || args.includes('-r');
 const sessionId = args.find(a => !a.startsWith('-')) || '';
 
-// ── 1. Read API key ──
+// ── 1. 读 API key ──
 function getApiKey() {
   try {
     const s = JSON.parse(fs.readFileSync(SETTINGS, 'utf-8'));
     return s?.env?.ANTHROPIC_AUTH_TOKEN || process.env.ANTHROPIC_AUTH_TOKEN || '';
   } catch { return process.env.ANTHROPIC_AUTH_TOKEN || ''; }
 }
+let currencySymbol = '$'; // detected from balance API
 
 // ── 2. 余额 ──
 function fetchBalance() {
@@ -67,7 +67,7 @@ function fetchBalance() {
 if (refresh) {
   const bal = fetchBalance();
   fs.writeFileSync(BALANCE_CACHE, bal.total.toFixed(2));
-  console.log('✅ Balance refreshed');
+  console.log('✅ 余额已刷新');
   if (mode === 'short') process.exit(0);
 }
 
@@ -142,7 +142,7 @@ if (session) stats = parseSession(session.path);
 
 const cachePct = stats.totalIn > 0 ? (stats.maxCache / stats.totalIn) * 100 : 0;
 
-// ── 4. Short output ──
+// ── 4. 简版输出 ──
 if (mode === 'short') {
   let icon = '';
   if (balData.total < 1) icon = '🔴';
@@ -151,7 +151,7 @@ if (mode === 'short') {
   process.exit(0);
 }
 
-// ── 5. Dashboard ──
+// ── 5. 彩色仪表盘 ──
 function bar(pct, w = 20, dir = 'more') {
   let color;
   if (dir === 'more') {
@@ -195,6 +195,6 @@ console.log(`  ${C.bcyan}║${C.reset}    ${C.dim}miss:${C.reset} ${currencySymb
 if (stats.maxCache > 0)
   console.log(`  ${C.bcyan}║${C.reset}    ${C.dim}hit:${C.reset}   ${currencySymbol}${CACHE_PRICE}/M → ${C.green}${fmt.money(inCostCached)}${C.reset}                  ${C.bcyan}║${C.reset}`);
 console.log(`  ${C.bcyan}║${C.reset}    ${C.dim}output:${C.reset} ${currencySymbol}${OUTPUT_PRICE}  /M → ${C.magenta}${fmt.money(stats.outCost)}${C.reset}                  ${C.bcyan}║${C.reset}`);
-console.log(`  ${C.bcyan}║${C.reset}    ${C.bold}Total:${C.reset}           ${C.byellow}${fmt.money(stats.totalCost)}${C.reset}                  ${C.bcyan}║${C.reset}`);
+console.log(`  ${C.bcyan}║${C.reset}    ${C.bold}合计:${C.reset}           ${C.byellow}${fmt.money(stats.totalCost)}${C.reset}                  ${C.bcyan}║${C.reset}`);
 console.log(`  ${C.bcyan}${C.bold}╚${HR}╝${C.reset}`);
-console.log(`  ${C.dim}📋 ${(session?.id || '?').slice(0, 16)}...  |  DeepSeek V4 Pro${C.reset}\n`);
+console.log(`  ${C.dim}📋 ${(session?.id || '?').slice(0, 16)}...  |  DeepSeek V4 Pro 2.5折${C.reset}\n`);

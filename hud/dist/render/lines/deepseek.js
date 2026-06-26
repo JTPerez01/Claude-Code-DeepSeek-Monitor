@@ -137,12 +137,10 @@ export function renderDeepSeekLine(ctx) {
         const alert = delta !== null && delta > alertThreshold;
         const deltaStr = delta !== null && delta > 0.0001 ? `+${formatCost(delta)}` : '';
         const cumStr = formatCost(cumCost);
-        const costStr = alert
-            ? `${red(deltaStr)} ${dim(cumStr)}`
-            : deltaStr
-                ? `${yellow(deltaStr)} ${dim(cumStr)}`
-                : yellow(cumStr);
-        parts.push(`${label(t('label.cost'))} ${costStr}`);
+        const costStr = deltaStr
+            ? `${yellow(deltaStr)} ${dim(cumStr)}`
+            : yellow(cumStr);
+        parts.push(costStr);
     }
     function rainbow(n) {
         if (n <= 0.5)
@@ -176,9 +174,6 @@ export function renderDeepSeekLine(ctx) {
         catch { }
         parts.push(`${label(t('label.balance'))} ${color}${currencySymbol}${bal.str}${RESET}${warn}${age}`);
     }
-    const ver = readVersion();
-    if (ver)
-        parts.push(`${dim('v' + ver)}`);
     if (parts.length === 0)
         return null;
     return parts.join('  ');
