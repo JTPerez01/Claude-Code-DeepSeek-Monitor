@@ -1,0 +1,21 @@
+{
+  "language": "en",
+  "lineLayout": "compact",
+  "elementOrder": [
+    "deepseek"
+  ],
+  "display": {
+    "showModel": false,
+    "showProject": false,
+    "showContextBar": false,
+    "showDeepSeek": true,
+    "showCost": true,
+    "showUsage": false,
+    "showTools": false,
+    "showAgents": false,
+    "showTodos": false,
+    "showDuration": false,
+    "showSessionName": false,
+    "contextValue": "both"
+  }
+}

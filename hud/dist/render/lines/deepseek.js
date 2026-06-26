@@ -4,9 +4,10 @@ import * as path from 'node:path';
 import { execSync } from 'node:child_process';
 import { dim, label, yellow, red, RESET } from '../colors.js';
 import { t } from '../../i18n/index.js';
-const DS_INPUT_PRICE = 3;
-const DS_CACHE_PRICE = 0.025;
-const DS_OUTPUT_PRICE = 6;
+// USD pricing (env overridable)
+const DS_INPUT_PRICE = +process.env.DEEPSEEK_INPUT_PRICE || 0.435;
+const DS_CACHE_PRICE = +process.env.DEEPSEEK_CACHE_HIT_PRICE || 0.003625;
+const DS_OUTPUT_PRICE = +process.env.DEEPSEEK_OUTPUT_PRICE || 0.87;
 const REFRESH_SEC = 5; // 5 秒刷新
 const ALERT_DEFAULT = 0.5;
 const CACHE_DIR = path.join(os.homedir(), '.claude', 'deepseek-cache');
@@ -57,12 +58,14 @@ function getBalance() {
                 }
                 catch { }
             }
+            if (!apiKey) apiKey = process.env.ANTHROPIC_AUTH_TOKEN || '';
             if (apiKey) {
                 const body = execSync(`curl -s --max-time 3 https://api.deepseek.com/user/balance -H "Authorization: Bearer ${apiKey}"`, { encoding: 'utf8', timeout: 4000, stdio: ['pipe', 'pipe', 'ignore'] }).trim();
                 if (body) {
                     const j = JSON.parse(body);
                     const b = (j.balance_infos || [{}])[0];
-                    cached = [b.total_balance || '0', b.topped_up_balance || '0', b.granted_balance || '0', j.is_available ? 'true' : 'false'].join(' ');
+                    if (b.currency) currencySymbol = b.currency === 'USD' ? '$' : b.currency === 'CNY' ? '¥' : b.currency;
+                    cached = [b.total_balance || '0', b.topped_up_balance || '0', b.granted_balance || '0', j.is_available ? 'true' : 'false', b.currency || 'USD'].join(' ');
                     fs.writeFileSync(BALANCE_CACHE, cached);
                     age = 0;
                 }
@@ -72,9 +75,16 @@ function getBalance() {
     }
     if (!cached)
         return null;
-    const num = parseFloat(cached);
+    // Cache format: "balance toppedUp granted available [currency]"
+    const parts = cached.split(' ');
+    const num = parseFloat(parts[0]);
     if (isNaN(num))
         return null;
+    // Restore currency symbol from cache if present
+    if (parts.length >= 5 && parts[4]) {
+        const sym = parts[4];
+        currencySymbol = sym === 'USD' ? '$' : sym === 'CNY' ? '¥' : sym;
+    }
     return { value: num, str: num.toFixed(2), fresh: age < 120 };
 }
 function readLastCumCost() {
@@ -93,14 +103,16 @@ function writeCumCost(v) {
     }
     catch { }
 }
+let currencySymbol = '$';
 function formatCost(n) {
+    const s = currencySymbol;
     if (n < 0.0001)
-        return '¥0';
+        return s + '0';
     if (n < 0.01)
-        return `¥${n.toFixed(4)}`;
+        return s + n.toFixed(4);
     if (n < 1)
-        return `¥${n.toFixed(3)}`;
-    return `¥${n.toFixed(2)}`;
+        return s + n.toFixed(3);
+    return s + n.toFixed(2);
 }
 export function renderDeepSeekLine(ctx) {
     if (ctx.config?.display?.showDeepSeek !== true)
@@ -162,7 +174,7 @@ export function renderDeepSeekLine(ctx) {
             age = ` ${dim(Math.round((Date.now() - s.mtimeMs) / 1000) + 's')}`;
         }
         catch { }
-        parts.push(`${label(t('label.balance'))} ${color}¥${bal.str}${RESET}${warn}${age}`);
+        parts.push(`${label(t('label.balance'))} ${color}${currencySymbol}${bal.str}${RESET}${warn}${age}`);
     }
     const ver = readVersion();
     if (ver)
